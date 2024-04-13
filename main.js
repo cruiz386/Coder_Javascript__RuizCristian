@@ -1,10 +1,10 @@
 const consultarId = () => {
-    let usuarioId = parseInt(prompt("ingrese su numero de usuario"));
+    let usuarioId = parseInt(prompt("Ingrese su numero de usuario"));
     return usuarioId
 }
 
 const consultarClave = () => {
-    let usuarioClave = prompt("ingrese su Clave");
+    let usuarioClave = prompt("Ingrese su clave");
     return usuarioClave
 }
 
@@ -36,7 +36,7 @@ let saludarFin = (id) => {
 
 
 function consultarAccion() {
-    let eleccion = prompt("Ingrese:  A: Crear - B: Modificar - C: Eliminar - D: Mostrar tareas - Cancelar o ESC para SALIR");
+    let eleccion = prompt("Ingrese que desea realizar: \n A: Crear tarea \n B: Modificar tarea\n C: Eliminar tarea\n D: Mostrar tareas creadas\n Cancelar o ESC para SALIR");
     return eleccion
 }
 
