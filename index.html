@@ -5,36 +5,51 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>app de tareas</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
+    <title>Login adminTask</title>
 </head>
 
 <body>
-    <header>
-        <h1>PRE ENTREGA NUMERO 1 - CODER - ALUMNO: RUIZ CRISTIAN</h1>
-        <h2>SIMULADOR - GESTOR DE TAREAS</h2>
-    </header>
-    <main>
-        <section>
-            <h3>Instrucciones:</h3>
-            <p>Para el uso del gestor de tareas debe:</p>
-            <ol>
-                <li>Ingresar numero de usuario - usuario simulador 606060</li>
-                <li>Ingresar clave de usuario - Clave12345</li>
-                <li>Maximo de 3 intentos de usuario y/o clave incorrecta</li>
-                <li>Ingresar accion que desea realizar:</li>
-            </ol>
-            <ul>
-                <li>A: Crear una tarea</li>
-                <li>B: Modificar una tarea</li>
-                <li>C: Eliminar una tarea</li>
-                <li>D: Mostrar tareas</li>
-                <li>ESC o Cancelar para SALIR</li>
-            </ul>
-        </section>
-    </main>
+
+    
+
+    <div class="container login">
+        <div class="form-container-login">
+            <div>
+
+                <h2 class="titulo">Login</h2>
+
+            </div>
+
+            <form id="login_form">
+                <div class="form-group">
+                    <span class="input-group-addon"><i class="fas fa-user"></i></span>
+                    <label for="username" class="link_sesion">Usuario:</label>
+                    <input type="text" id="username" name="username" placeholder="usuario" required>
+                </div>
+                <div class="form-group">
+                    <span class="input-group-addon"><i class="fas fa-lock"></i></span>
+                    <label for="password" class="link_sesion">Contraseña:</label>
+
+                    <input type="password" id="password" name="password" placeholder="contraseña" required>
+                </div>
+                <div class="form-group">
+                    <button type="submit" id="login_submit" class="boton">Enviar</button>
+                </div>
+                <div id="error" class="error">
+                    <h3>Error</h3>
+                </div>
+            </form>
 
 
-    <script src="./main.js"></script>
+        </div>
+
+    </div>
+
+    <script src="./JS/app.js"></script>
+
 </body>
 
 </html>

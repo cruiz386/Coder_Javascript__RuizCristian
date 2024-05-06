@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
+    <title>Mostrar tareas - adminTask</title>
+</head>
+
+
+<body>
+    <header>
+
+        <div class="header_div">
+            <div class="header_div">
+                <a href="home.html" class="link_sesion">home</a>
+            </div>
+           
+            <div class="header_div">
+                <span class="input-group-addon"><i class="fas fa-user"></i></span>
+                <p id="usuario"> </p>
+            </div>
+
+            <div class="header_div">
+                <a href="../index.html" class="link_sesion">cerrar sesion</a>
+            </div>
+           
+        </div>
+
+        <div>
+            <ul class="link">
+                <li> <button class="boton_header"><a href="./crear.html" class="link">crear</a></button> </li>
+                <li> <button class="boton_header"><a href="./mostrar.html" class="link">mostrar</a></button> </li>
+            </ul>
+        </div>
+
+    </header>
+
+    <h1 class="titulo">Mostrar tareas</h1>
+
+    <div>
+        <button id="mostrar-tarjetas" class="boton-mostrar">Mostrar Todas</button>
+        <button id="eliminar-tarjetas" class="boton-eliminar">Eliminar Todas</button>
+    </div>
+
+    <div> <input type="text" id="filtro-nombre" placeholder="Nombre">
+        <input type="text" id="filtro-direccion" placeholder="Dirección">
+        <input type="text" id="filtro-dni" placeholder="DNI">
+        <input type="text" id="filtro-falla" placeholder="Falla">
+        <input type="text" id="filtro-tecnico" placeholder="Técnico">
+        <button id="btn-filtrar" class="boton-mostrar">Filtrar</button>
+    </div>
+
+
+    <div id="container-mostrar-tarjeta" class="container-tarjeta"></div>
+    </div>
+
+    
+    <script src="../JS/app.js"></script>
+</body>
+
+</html>
