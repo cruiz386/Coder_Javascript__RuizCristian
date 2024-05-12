@@ -93,6 +93,20 @@ label {
 .form-container p,
 .form-container-tarjetas p {
     font-weight: bolder;
+    max-width: 100%;
+
+}
+
+/* button {
+    margin-bottom: 5px;
+    border-radius: 15px;
+} */
+
+.textarea-scroll {
+    height: 100px;
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 5px;
 }
 
 .form-group {
@@ -139,15 +153,23 @@ label {
 
 .container-tarjeta {
     display: grid;
+    justify-items: center;
     grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
     gap: 20px;
 }
 
+
+
 .textarea {
     height: 100px;
+    width: 100%;
     resize: vertical;
     border: 1px solid #3f413f1f;
     box-shadow: 0 0 10px rgba(49, 48, 48, 0.794);
+    margin-bottom: 5px;
+    /*     max-width: 100%;
+    overflow:scroll;  Oculta el contenido que exceda el ancho máximo 
+    text-overflow: ellipsis;  Agrega puntos suspensivos (...) al final del texto si se recorta */
 }
 
 .error {
@@ -161,6 +183,10 @@ label {
     text-align: center;
     color: #237e0d;
     font-weight: 500;
+}
+
+#formulario-modificar {
+    display: none;
 }
 
 ul li {
@@ -190,7 +216,7 @@ button.boton_header {
 }
 
 .link_sesion {
-    color: #237e0d;
+    color: white;
     font-size: 14px;
 }
 
@@ -203,6 +229,23 @@ button.boton_header {
     margin: 20px 0;
 
 }
+
+
+.estado-pendiente {
+    background-color: #ffcccc;
+    /* Rojo claro */
+}
+
+.estado-ejecutando {
+    background-color: #ffffcc;
+    /* Amarillo claro */
+}
+
+.estado-finalizado {
+    background-color: #ccffcc;
+    /* Verde claro */
+}
+
 
 @media (min-width: 768px) {
 

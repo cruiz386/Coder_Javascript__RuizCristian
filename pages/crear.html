@@ -21,7 +21,7 @@
 
         <div class="header_div">
             <div class="header_div">
-                <a href="./home.html" class="link_sesion">home</a>
+                <button class="boton_header" ><a href="home.html" class="link_sesion">home</a></button>
             </div>
 
             <div class="header_div">
@@ -30,7 +30,7 @@
             </div>
 
             <div class="header_div">
-                <a href="../index.html" class="link_sesion">cerrar sesion</a>
+                <button class="boton_header" id="link_sesion">cerrar sesion</button> 
             </div>
 
         </div>
@@ -71,12 +71,16 @@
                     <input type="text" id="tecnico" name="tecnico">
                 </div>
 
+                <div class="form-group">
+                    <label for="tecnico">FECHA CREACION:</label>
+                    <p id="fecha-inicio"> </p>
+                </div>
+
+
                 <label for="comentario">COMENTARIO:</label>
                 <div class="form-floating">
-
                     <textarea id="coment" class="form-control textarea" placeholder="Leave a comment here"
                         id="floatingTextarea2"></textarea>
-
                 </div>
                 <div class="form-group">
                     <button type="submit" class="boton">crear tarjeta</button>
