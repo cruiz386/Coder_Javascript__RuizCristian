@@ -8,6 +8,12 @@ body {
     height: 100%;
 }
 
+.login_page {
+    background-image: url('../assets/img/fondoColores.png.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
 header {
     margin: 10px 20px;
 }
@@ -177,7 +183,7 @@ label {
     font-family: 'Roboto', sans-serif;
     font-size: 30px;
     text-align: center;
-    color: #237e0d;
+    color: #e5eee3;
     font-weight: 500;
 }
 
