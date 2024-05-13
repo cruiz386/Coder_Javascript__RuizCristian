@@ -97,10 +97,6 @@ label {
 
 }
 
-/* button {
-    margin-bottom: 5px;
-    border-radius: 15px;
-} */
 
 .textarea-scroll {
     height: 100px;
@@ -204,6 +200,19 @@ button.boton_header {
     padding: 0 3px;
 }
 
+
+.chart-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    max-width: 500px;
+    min-width: 200px;
+    margin: 0 auto;
+}
+
+
+
 .link,
 .link_sesion {
     display: flex;
@@ -232,17 +241,17 @@ button.boton_header {
 
 
 .estado-pendiente {
-    background-color: #ffcccc;
+    background-color: rgb(255, 204, 204);
     /* Rojo claro */
 }
 
 .estado-ejecutando {
-    background-color: #ffffcc;
+    background-color: rgb(255, 255, 204);
     /* Amarillo claro */
 }
 
 .estado-finalizado {
-    background-color: #ccffcc;
+    background-color: rgb(204, 255, 204);
     /* Verde claro */
 }
 

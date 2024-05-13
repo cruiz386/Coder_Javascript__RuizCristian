@@ -7,7 +7,10 @@ let intentos = 3; // Número de intentos permitidos para el inicio de sesión
 let tarjetas = []; // Array para almacenar las tarjetas
 let cantidadTarjetas = tarjetas.length; // Cantidad de tarjetas almacenadas
 
-
+// Contar las tarjetas por estado
+let pendientes = 0;
+let ejecucion = 0;
+let finalizado = 0;
 
 /* ------------------------------------------------------------------------------ */
 /* ------------------------------------ LOGIN ----------------------------------- */
@@ -513,4 +516,68 @@ async function filtrarTarjetas() { // Función para filtrar y mostrar las tarjet
 
 
 
+async function contarTarjetas() {
+    const tarjetasString = localStorage.getItem('tarjetas');
+    const tarjetas = JSON.parse(tarjetasString);
 
+    let pendientes = 0;
+    let ejecucion = 0;
+    let finalizado = 0;
+
+    tarjetas.forEach(tarjeta => {
+        switch (tarjeta[5]) {
+            case 'pendiente':
+                pendientes++;
+                break;
+            case 'ejecutando':
+                ejecucion++;
+                break;
+            case 'finalizado':
+                finalizado++;
+                break;
+            default:
+                break;
+        }
+    });
+
+    return { pendientes, ejecucion, finalizado };
+}
+
+async function graficarTarjetas() {
+    const { pendientes, ejecucion, finalizado } = await contarTarjetas();
+
+    
+    const ctx = document.getElementById('myChart');
+
+    new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: ['Ejecución', 'Finalizado', 'Pendiente'],
+            datasets: [{
+                label: 'Cantidad de tarjetas por estado',
+                data: [ejecucion, finalizado, pendientes],
+                backgroundColor: [
+                    'rgb(255, 255, 204)',
+                    'rgb(204, 255, 204)',
+                    'rgb(255, 204, 204)'
+
+                ],
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'Cantidad de tarjetas por estado'
+                }
+            }
+        }
+    });
+}
+
+graficarTarjetas();
