@@ -33,7 +33,7 @@ async function mostrarAlert(estado, mensaje) {
             icon: "success",
             title: "Bienvenido a AdminTask!",
             text: "Autenticacion correcta!",
-            
+
         });
     }
 }
@@ -43,8 +43,8 @@ async function mostrarAlert(estado, mensaje) {
 async function validarLogin(u, p) {
     return new Promise((resolve, reject) => {
         if (u === '606060' && p === 'Clave12345') {
-            localStorage.setItem('usuario', u);
             mostrarAlert('exito', 'Autenticacion correcta!');
+            localStorage.setItem('usuario', u);
             resolve("Exito");
         } else {
             intentos--;
