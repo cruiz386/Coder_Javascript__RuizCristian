@@ -18,28 +18,40 @@ let finalizado = 0;
 
 
 
-async function mostrarError(mensaje) {
-    const errorLogin = document.getElementById('error'); // obtiene el elemento del DOM con ID error
-    errorLogin.style.display = 'block'; // muestra el elemento que por defecto estana con display none
-    const errorDiv = document.createElement("div");
-    const errorText = document.createElement("p");
-    errorText.textContent = mensaje;
-    errorDiv.appendChild(errorText);
-    const formContainer = document.getElementById("login_form");
-    formContainer.appendChild(errorDiv);
+async function mostrarAlert(estado, mensaje) {
+
+    if (estado === 'fallo') {
+        Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: `${mensaje}`,
+            confirmButtonText: 'OK'
+        });
+    }
+    else if (estado === 'exito') {
+        Swal.fire({
+            icon: "success",
+            title: "Bienvenido a AdminTask!",
+            text: "Autenticacion correcta!",
+            
+        });
+    }
 }
+
+
 
 async function validarLogin(u, p) {
     return new Promise((resolve, reject) => {
         if (u === '606060' && p === 'Clave12345') {
             localStorage.setItem('usuario', u);
+            mostrarAlert('exito', 'Autenticacion correcta!');
             resolve("Exito");
         } else {
             intentos--;
             if (intentos > 0) {
-                mostrarError(`Usuario o contraseña incorrectos. Intentos restantes: ${intentos}`);
+                mostrarAlert('fallo', `Usuario o contraseña incorrectos. Intentos restantes: ${intentos}`);
             } else {
-                mostrarError('Has alcanzado el límite de intentos. Por favor, inténtalo más tarde.');
+                mostrarAlert('fallo', 'Has alcanzado el límite de intentos. Por favor, inténtalo más tarde.');
                 reject("Fallo");
             }
         }
@@ -64,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     await validarLogin(user, pass);
                     window.location.href = './pages/home.html';
                 } catch (error) {
-
+                    console.warn(error);
                 }
             }
         });
@@ -546,7 +558,7 @@ async function contarTarjetas() {
 async function graficarTarjetas() {
     const { pendientes, ejecucion, finalizado } = await contarTarjetas();
 
-    
+
     const ctx = document.getElementById('myChart');
 
     new Chart(ctx, {
