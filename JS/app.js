@@ -21,19 +21,23 @@ let finalizado = 0;
 async function mostrarAlert(estado, mensaje) {
 
     if (estado === 'fallo') {
-        Swal.fire({
+        await  Swal.fire({
             icon: "error",
             title: "Oops...",
             text: `${mensaje}`,
-            confirmButtonText: 'OK'
+            confirmButtonText: 'OK',
+            allowOutsideClick: false, // Evita que se cierre al hacer clic fuera del alerta
+            allowEscapeKey: false // Evita que se cierre al presionar la tecla Escape
         });
     }
     else if (estado === 'exito') {
-        Swal.fire({
+        await Swal.fire({
             icon: "success",
             title: "Bienvenido a AdminTask!",
             text: "Autenticacion correcta!",
-
+            confirmButtonText: 'OK',
+            allowOutsideClick: false, // Evita que se cierre al hacer clic fuera del alerta
+            allowEscapeKey: false // Evita que se cierre al presionar la tecla Escape
         });
     }
 }
@@ -41,17 +45,18 @@ async function mostrarAlert(estado, mensaje) {
 
 
 async function validarLogin(u, p) {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         if (u === '606060' && p === 'Clave12345') {
-            mostrarAlert('exito', 'Autenticacion correcta!');
+            await mostrarAlert('exito', 'Autenticacion correcta!');
             localStorage.setItem('usuario', u);
             resolve("Exito");
+            window.location.href = '../index.html';
         } else {
             intentos--;
             if (intentos > 0) {
-                mostrarAlert('fallo', `Usuario o contraseña incorrectos. Intentos restantes: ${intentos}`);
+                await mostrarAlert('fallo', `Usuario o contraseña incorrectos. Intentos restantes: ${intentos}`);
             } else {
-                mostrarAlert('fallo', 'Has alcanzado el límite de intentos. Por favor, inténtalo más tarde.');
+                await mostrarAlert('fallo', 'Has alcanzado el límite de intentos. Por favor, inténtalo más tarde.');
                 reject("Fallo");
             }
         }
@@ -75,6 +80,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 try {
                     await validarLogin(user, pass);
                     window.location.href = './pages/home.html';
+
                 } catch (error) {
                     console.warn(error);
                 }
@@ -557,8 +563,6 @@ async function contarTarjetas() {
 
 async function graficarTarjetas() {
     const { pendientes, ejecucion, finalizado } = await contarTarjetas();
-
-
     const ctx = document.getElementById('myChart');
 
     new Chart(ctx, {
@@ -591,5 +595,6 @@ async function graficarTarjetas() {
         }
     });
 }
+
 
 graficarTarjetas();
