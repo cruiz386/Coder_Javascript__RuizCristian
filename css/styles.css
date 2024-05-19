@@ -82,6 +82,13 @@ label {
     flex-direction: row;
 }
 
+.contenedor {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+}
+
 .form-container,
 .form-container-tarjetas {
     display: flex;
@@ -188,7 +195,8 @@ label {
 }
 
 #formulario-modificar {
-    display: none;
+    display: flex;
+    justify-content: center;
 }
 
 ul li {

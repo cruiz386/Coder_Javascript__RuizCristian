@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="../css/styles.css">
     <title>Mostrar tareas - adminTask</title>
 </head>
@@ -19,18 +21,18 @@
 
         <div class="header_div">
             <div class="header_div">
-                <button class="boton_header" ><a href="home.html" class="link_sesion">home</a></button>
+                <button class="boton_header"><a href="home.html" class="link_sesion">home</a></button>
             </div>
-           
+
             <div class="header_div">
                 <span class="input-group-addon"><i class="fas fa-user"></i></span>
                 <p id="usuario"> </p>
             </div>
 
             <div class="header_div">
-                <button class="boton_header" id="link_sesion">cerrar sesion</button> 
+                <button class="boton_header" id="link_sesion">cerrar sesion</button>
             </div>
-           
+
         </div>
 
         <div>
@@ -42,29 +44,32 @@
 
     </header>
 
-    <h1 class="titulo">Mostrar tareas</h1>
-
-    <div>
-        <button id="mostrar-tarjetas" class="boton-mostrar">Mostrar Todas</button>
-        <button id="eliminar-tarjetas" class="boton-eliminar">Eliminar Todas</button>
-    </div>
-
-    <div> <input type="text" id="filtro-nombre" placeholder="Nombre">
-        <input type="text" id="filtro-direccion" placeholder="Dirección">
-        <input type="text" id="filtro-dni" placeholder="DNI">
-        <input type="text" id="filtro-falla" placeholder="Falla">
-        <input type="text" id="filtro-tecnico" placeholder="Técnico">
-        <input type="text" id="filtro-estado" placeholder="Estado">
-        <input type="text" id="filtro-fecha" placeholder="Fecha creacion">
-        <button id="btn-filtrar" class="boton-mostrar">Filtrar</button>
-    </div>
-
-    <div id="formulario-modificar" class="form-container-tarjeta"></div>
-    <div id="container-mostrar-tarjeta" class="container-tarjeta"></div>
-    </div>
-
     
-    <script src="../JS/app.js"></script>
+        <h1 class="titulo">Mostrar tareas</h1>
+
+        <div class="contenedor">
+            <div>
+                <button id="mostrar-tarjetas" class="boton-mostrar">Mostrar Todas</button>
+                <button id="eliminar-tarjetas" class="boton-eliminar">Eliminar Todas</button>
+            </div>
+
+            <div>
+                <input type="text" id="filtro-nombre" placeholder="Nombre">
+                <input type="text" id="filtro-direccion" placeholder="Dirección">
+                <input type="text" id="filtro-dni" placeholder="DNI">
+                <input type="text" id="filtro-falla" placeholder="Falla">
+                <input type="text" id="filtro-tecnico" placeholder="Técnico">
+                <input type="text" id="filtro-estado" placeholder="Estado">
+                <input type="text" id="filtro-fecha" placeholder="Fecha creacion">
+                <button id="btn-filtrar" class="boton-mostrar">Filtrar</button>
+            </div>
+        </div>
+
+        <div id="formulario-modificar" class="form-container-tarjeta"></div>
+        <div id="container-mostrar-tarjeta" class="container-tarjeta"></div>
+
+
+        <script src="../JS/app.js"></script>
 </body>
 
 </html>

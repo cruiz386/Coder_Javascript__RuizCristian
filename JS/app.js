@@ -19,9 +19,8 @@ let finalizado = 0;
 
 
 async function mostrarAlert(estado, mensaje) {
-
     if (estado === 'fallo') {
-        await  Swal.fire({
+        await Swal.fire({
             icon: "error",
             title: "Oops...",
             text: `${mensaje}`,
@@ -29,15 +28,42 @@ async function mostrarAlert(estado, mensaje) {
             allowOutsideClick: false, // Evita que se cierre al hacer clic fuera del alerta
             allowEscapeKey: false // Evita que se cierre al presionar la tecla Escape
         });
-    }
-    else if (estado === 'exito') {
+    } else if (estado === 'exito') {
         await Swal.fire({
             icon: "success",
             title: "Bienvenido a AdminTask!",
-            text: "Autenticacion correcta!",
+            text: "Autenticación correcta!",
             confirmButtonText: 'OK',
             allowOutsideClick: false, // Evita que se cierre al hacer clic fuera del alerta
             allowEscapeKey: false // Evita que se cierre al presionar la tecla Escape
+        });
+    } else if (estado === 'modificar') {
+        return Swal.fire({
+            title: "¿Estás seguro?",
+            text: "¡Estás modificando el contenido de la tarjeta!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Sí, modificar!",
+            cancelButtonText: "Cancelar"
+        });
+    } else if (estado === 'borrar') {
+        let texto;
+        if (mensaje === 'tarjeta') {
+            texto = "¡Estás eliminando la tarjeta!";
+        } else {
+            texto = "¡Estás eliminando todas las tarjetas!";
+        }
+        return Swal.fire({
+            title: "¿Estás seguro?",
+            text: texto,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Sí, eliminar!",
+            cancelButtonText: "Cancelar"
         });
     }
 }
@@ -54,7 +80,7 @@ async function validarLogin(u, p) {
         } else {
             intentos--;
             if (intentos > 0) {
-                await mostrarAlert('fallo', `Usuario o contraseña incorrectos. Intentos restantes: ${intentos}`);
+                await mostrarAlert('fallo', `Usuario o contraseña incorrectos.Intentos restantes: ${intentos}`);
             } else {
                 await mostrarAlert('fallo', 'Has alcanzado el límite de intentos. Por favor, inténtalo más tarde.');
                 reject("Fallo");
@@ -68,7 +94,7 @@ async function validarLogin(u, p) {
 /* ------------------------------------------------------------------------------ */
 
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', async () => {
 
     const enviarLogin = document.getElementById('login_form');
     if (enviarLogin) {
@@ -120,9 +146,6 @@ document.addEventListener('DOMContentLoaded', function () {
         cerrarSesionBtn.addEventListener('click', cerrarSesion); // Agrega listener para el evento click del botón
     }
 
-
-
-
     // comprobar si hay tarjetas almacenadas en localStorage y cargarlas en la variable tarjetas
     if (localStorage.getItem('tarjetas')) {
         tarjetas = JSON.parse(localStorage.getItem('tarjetas'));
@@ -155,6 +178,9 @@ document.addEventListener('DOMContentLoaded', function () {
             cantidadTarjetas = tarjetas.length; // Actualiza la cantidad de tarjetas
         });
     }
+
+
+    graficarTarjetas();
 });
 
 
@@ -198,9 +224,9 @@ async function crearTarjeta(tarjeta) {
         } else {
             const elementP = document.createElement('p');
             if (tarjeta[index]) {
-                elementP.textContent = `${dato}:     ${tarjeta[index].toUpperCase()}`;
+                elementP.textContent = `${dato}: ${tarjeta[index].toUpperCase()}`;
             } else {
-                elementP.textContent = `${dato}:     `;
+                elementP.textContent = `${dato}: `;
             }
             card.appendChild(elementP);
         }
@@ -209,8 +235,6 @@ async function crearTarjeta(tarjeta) {
     const container = document.getElementById('container-tarjeta');
     container.appendChild(card);
 }
-
-
 
 async function mostrarTarjetas() {
     const tarjetasString = localStorage.getItem('tarjetas');
@@ -245,9 +269,9 @@ async function mostrarTarjetas() {
             } else {
                 const elementP = document.createElement('p');
                 if (tarjeta[index]) {
-                    elementP.textContent = `${dato}:     ${tarjeta[index].toUpperCase()}`;
+                    elementP.textContent = `${dato}: ${tarjeta[index].toUpperCase()}`;
                 } else {
-                    elementP.textContent = `${dato}:     `;
+                    elementP.textContent = `${dato}: `;
                 }
                 card.appendChild(elementP);
             }
@@ -266,14 +290,14 @@ async function mostrarTarjetas() {
             checkbox.checked = tarjeta[5] === estado;
 
             // Asignar un identificador único al checkbox basado en la posición de la tarjeta en el array
-            checkbox.id = `checkbox-${index}`;
+            checkbox.id = `checkbox - ${index}`;
 
             // Asignar listener de evento change
             checkbox.addEventListener('change', function () {
                 // Desmarcar los otros checkboxes de la misma tarjeta
                 estados.forEach(function (otroEstado) {
                     if (otroEstado !== estado) {
-                        const otroCheckbox = document.getElementById(`checkbox-${index}`);
+                        const otroCheckbox = document.getElementById(`checkbox - ${index}`);
                         otroCheckbox.checked = false;
                     }
                 });
@@ -306,8 +330,11 @@ async function mostrarTarjetas() {
         btnModificar.textContent = 'Modificar';
         btnModificar.classList.add('boton-eliminar');
         btnModificar.addEventListener('click', function () {
+
             modificarTarjeta(tarjeta);
+
             mostrarTarjetas();
+
         });
         card.appendChild(btnModificar);
 
@@ -315,29 +342,53 @@ async function mostrarTarjetas() {
     });
 }
 
-
 async function eliminarTarjetas() { // Función para eliminar todas las tarjetas almacenadas
-    localStorage.removeItem('tarjetas');
-    localStorage.removeItem('cantidadTarjetas');
-    const contenedorTarjetas = document.getElementById('container-mostrar-tarjeta');
-    contenedorTarjetas.innerHTML = ''; // Limpiar el contenedor 
-}
+    const result = await mostrarAlert('borrar', 'tarjetas');
+    if (result.isConfirmed) {
+        localStorage.removeItem('tarjetas');
+        localStorage.removeItem('cantidadTarjetas');
 
+        const contenedorTarjetas = document.getElementById('container-mostrar-tarjeta');
+        contenedorTarjetas.innerHTML = ''; // Limpiar el contenedor 
+        Swal.fire({
+            title: "Eliminadas!",
+            text: "Las tarjetas se eliminaron con éxito.",
+            icon: "success"
+        });
+        mostrarTarjetas();
+    }
+}
 
 async function eliminarTarjeta(index) { // Función para eliminar una tarjeta específica
-    const tarjetasString = localStorage.getItem('tarjetas');
-    let tarjetasStorage = JSON.parse(tarjetasString);
-    tarjetasStorage.splice(index, 1); // Elimina la tarjeta del array
-    localStorage.setItem('tarjetas', JSON.stringify(tarjetasStorage)); // Actualiza el localStorage
+    const result = await mostrarAlert('borrar', 'tarjeta');
+    if (result.isConfirmed) {
+        Swal.fire({
+            title: "Eliminada!",
+            text: "La tarjeta se elimino con éxito.",
+            icon: "success"
+        });
+        const tarjetasString = localStorage.getItem('tarjetas');
+        let tarjetasStorage = JSON.parse(tarjetasString);
+        tarjetasStorage.splice(index, 1); // Elimina la tarjeta del array
+        localStorage.setItem('tarjetas', JSON.stringify(tarjetasStorage)); // Actualiza el localStorage
+        mostrarTarjetas();
+    }
 }
-
-
 
 async function modificarTarjeta(tarjeta) {
     const tarjetasString = localStorage.getItem('tarjetas');
     let tarjetasStorage = JSON.parse(tarjetasString);
 
-    const index = tarjetasStorage.findIndex(t => t[0] === tarjeta[0] && t[1] === tarjeta[1] && t[2] === tarjeta[2] && t[3] === tarjeta[3] && t[4] === tarjeta[4] && t[5] === tarjeta[5] && t[6] === tarjeta[6]);
+    const index = tarjetasStorage.findIndex(t =>
+        t[0] === tarjeta[0] &&
+        t[1] === tarjeta[1] &&
+        t[2] === tarjeta[2] &&
+        t[3] === tarjeta[3] &&
+        t[4] === tarjeta[4] &&
+        t[5] === tarjeta[5] &&
+        t[6] === tarjeta[6]
+    );
+
 
     const formModificar = document.createElement('form');
     formModificar.classList.add('form-container');
@@ -357,39 +408,54 @@ async function modificarTarjeta(tarjeta) {
         <button type="submit" class="boton-mostrar">Guardar cambios</button>
     `;
 
-    formModificar.addEventListener('submit', function (event) {
-        event.preventDefault();
+    const result = await mostrarAlert('modificar', 'tarjeta');
+    if (result.isConfirmed) {
 
-        // Obtener los nuevos valores del formulario
-        const nuevoNombre = document.getElementById('nombre').value;
-        const nuevaDireccion = document.getElementById('direccion').value;
-        const nuevoDNI = document.getElementById('dni').value;
-        const nuevaFalla = document.getElementById('falla').value;
-        const nuevoTecnico = document.getElementById('tecnico').value;
-        const nuevoComentario = document.getElementById('comentario').value;
+        formModificar.addEventListener('submit', async function (event) {
+            event.preventDefault();
 
-        // Actualizar la tarjeta en el array con los nuevos valores
-        tarjetasStorage[index] = [nuevoNombre, nuevaDireccion, nuevoDNI, nuevaFalla, nuevoTecnico, tarjeta[5], tarjeta[6], nuevoComentario];
+            const result = await mostrarAlert('modificar', 'tarjeta');
+            if (result.isConfirmed) {
 
-        // Actualizar el localStorage con la tarjeta modificada
-        localStorage.setItem('tarjetas', JSON.stringify(tarjetasStorage));
+                // Obtener los nuevos valores del formulario
+                const nuevoNombre = document.getElementById('nombre').value;
+                const nuevaDireccion = document.getElementById('direccion').value;
+                const nuevoDNI = document.getElementById('dni').value;
+                const nuevaFalla = document.getElementById('falla').value;
+                const nuevoTecnico = document.getElementById('tecnico').value;
+                const nuevoComentario = document.getElementById('comentario').value;
 
-        // Mostrar las tarjetas actualizadas
-        mostrarTarjetas();
-        contenedorFormulario.style.display = 'none';
-    });
+                // Actualizar la tarjeta en el array con los nuevos valores
+                tarjetasStorage[index] = [nuevoNombre, nuevaDireccion, nuevoDNI, nuevaFalla, nuevoTecnico, tarjeta[5], tarjeta[6], nuevoComentario];
 
-    const contenedorFormulario = document.getElementById('formulario-modificar');
-    contenedorFormulario.style.display = 'block';
-    if (contenedorFormulario) {
-        contenedorFormulario.innerHTML = '';
-        contenedorFormulario.appendChild(formModificar);
-    } else {
-        console.error('El contenedor del formulario no se encontró.');
+                // Actualizar el localStorage con la tarjeta modificada
+                localStorage.setItem('tarjetas', JSON.stringify(tarjetasStorage));
+
+                Swal.fire({
+                    title: "Modificada!",
+                    text: "La tarjeta se modificó con éxito.",
+                    icon: "success"
+                });
+
+                // Mostrar las tarjetas actualizadas
+                mostrarTarjetas();
+                contenedorFormulario.style.display = 'none';
+            }
+            contenedorFormulario.style.display = 'none';
+        });
+
+        const contenedorFormulario = document.getElementById('formulario-modificar');
+        if (contenedorFormulario) {
+
+            contenedorFormulario.style.display = 'flex';
+            contenedorFormulario.innerHTML = '';
+            contenedorFormulario.appendChild(formModificar);
+
+        } else {
+            console.error('El contenedor del formulario no se encontró.');
+        }
     }
 }
-
-
 
 async function obtenerValorEnMayusculas(id) {
     const elemento = document.getElementById(id);
@@ -399,7 +465,6 @@ async function obtenerValorEnMayusculas(id) {
         return '';
     }
 }
-
 
 async function filtrarTarjetas() { // Función para filtrar y mostrar las tarjetas según los criterios de búsqueda
     const tarjetasString = localStorage.getItem('tarjetas'); // Obtiene las tarjetas almacenadas en localStorage
@@ -490,7 +555,14 @@ async function filtrarTarjetas() { // Función para filtrar y mostrar las tarjet
 
                     const tarjetasString = localStorage.getItem('tarjetas');
                     let tarjetasStorage = JSON.parse(tarjetasString);
-                    const index = tarjetasStorage.findIndex(t => t[0] === tarjeta[0] && t[1] === tarjeta[1] && t[2] === tarjeta[2] && t[3] === tarjeta[3] && t[4] === tarjeta[4] && t[5] === tarjeta[5] && t[6] === tarjeta[6]);
+                    const index = tarjetasStorage.findIndex(t =>
+                        t[0] === tarjeta[0] &&
+                        t[1] === tarjeta[1] &&
+                        t[2] === tarjeta[2] &&
+                        t[3] === tarjeta[3] &&
+                        t[4] === tarjeta[4] &&
+                        t[5] === tarjeta[5] &&
+                        t[6] === tarjeta[6]);
 
                     // Actualiza el estado de la tarjeta en el array
                     tarjetasStorage[index][5] = estado;
@@ -532,8 +604,6 @@ async function filtrarTarjetas() { // Función para filtrar y mostrar las tarjet
     });
 }
 
-
-
 async function contarTarjetas() {
     const tarjetasString = localStorage.getItem('tarjetas');
     const tarjetas = JSON.parse(tarjetasString);
@@ -564,37 +634,38 @@ async function contarTarjetas() {
 async function graficarTarjetas() {
     const { pendientes, ejecucion, finalizado } = await contarTarjetas();
     const ctx = document.getElementById('myChart');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['Ejecución', 'Finalizado', 'Pendiente'],
+                datasets: [{
+                    label: 'Cantidad de tarjetas por estado',
+                    data: [ejecucion, finalizado, pendientes],
+                    backgroundColor: [
+                        'rgb(255, 255, 204)',
+                        'rgb(204, 255, 204)',
+                        'rgb(255, 204, 204)'
 
-    new Chart(ctx, {
-        type: 'pie',
-        data: {
-            labels: ['Ejecución', 'Finalizado', 'Pendiente'],
-            datasets: [{
-                label: 'Cantidad de tarjetas por estado',
-                data: [ejecucion, finalizado, pendientes],
-                backgroundColor: [
-                    'rgb(255, 255, 204)',
-                    'rgb(204, 255, 204)',
-                    'rgb(255, 204, 204)'
-
-                ],
-                hoverOffset: 4
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'top',
-                },
-                title: {
-                    display: true,
-                    text: 'Cantidad de tarjetas por estado'
+                    ],
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Cantidad de tarjetas por estado'
+                    }
                 }
             }
-        }
-    });
+        });
+    }
 }
 
 
-graficarTarjetas();
+
