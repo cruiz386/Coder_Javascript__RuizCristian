@@ -18,8 +18,12 @@ let finalizado = 0;
 
 
 
+
+
+/* ---------------------- ALERTAS SWEET ALERT ---------------------- */
+
 async function mostrarAlert(estado, mensaje) {
-    if (estado === 'fallo') {
+    if (estado === 'fallo') { // fallo de login
         await Swal.fire({
             icon: "error",
             title: "Oops...",
@@ -28,7 +32,7 @@ async function mostrarAlert(estado, mensaje) {
             allowOutsideClick: false, // Evita que se cierre al hacer clic fuera del alerta
             allowEscapeKey: false // Evita que se cierre al presionar la tecla Escape
         });
-    } else if (estado === 'exito') {
+    } else if (estado === 'exito') { // login exitoso
         await Swal.fire({
             icon: "success",
             title: "Bienvenido a AdminTask!",
@@ -37,8 +41,8 @@ async function mostrarAlert(estado, mensaje) {
             allowOutsideClick: false, // Evita que se cierre al hacer clic fuera del alerta
             allowEscapeKey: false // Evita que se cierre al presionar la tecla Escape
         });
-    } else if (estado === 'modificar') {
-        return Swal.fire({
+    } else if (estado === 'modificar') { //modificar tarjeta
+        return Swal.fire({  // pedido de confirmacion para modificar tarjeta
             title: "¿Estás seguro?",
             text: "¡Estás modificando el contenido de la tarjeta!",
             icon: "warning",
@@ -48,14 +52,14 @@ async function mostrarAlert(estado, mensaje) {
             confirmButtonText: "Sí, modificar!",
             cancelButtonText: "Cancelar"
         });
-    } else if (estado === 'borrar') {
+    } else if (estado === 'borrar') { // eliminar tarjeta/s
         let texto;
         if (mensaje === 'tarjeta') {
             texto = "¡Estás eliminando la tarjeta!";
         } else {
             texto = "¡Estás eliminando todas las tarjetas!";
         }
-        return Swal.fire({
+        return Swal.fire({ // pedido de confirmacion para eliminar tarjeta/s
             title: "¿Estás seguro?",
             text: texto,
             icon: "warning",
@@ -69,25 +73,50 @@ async function mostrarAlert(estado, mensaje) {
 }
 
 
-
+/* ---------------------- VALIDACION DE LOGIN ---------------------- */
 async function validarLogin(u, p) {
-    return new Promise(async (resolve, reject) => {
-        if (u === '606060' && p === 'Clave12345') {
-            await mostrarAlert('exito', 'Autenticacion correcta!');
-            localStorage.setItem('usuario', u);
-            resolve("Exito");
-            window.location.href = '../index.html';
-        } else {
-            intentos--;
-            if (intentos > 0) {
-                await mostrarAlert('fallo', `Usuario o contraseña incorrectos.Intentos restantes: ${intentos}`);
-            } else {
-                await mostrarAlert('fallo', 'Has alcanzado el límite de intentos. Por favor, inténtalo más tarde.');
-                reject("Fallo");
-            }
-        }
+    let resultado = false;
+    return new Promise((resolve, reject) => {
+
+        /* fetch a URL - DATOS DE USUARIOS DE PRUEBA CARGADOS EN MOCKAPI  */
+        fetch('https://664beb2d35bbda10987e6d95.mockapi.io/appAdminTask/users')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Respuesta: ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then(users => {
+                users.forEach(user => {
+                    if (u == user.user && p == user.pass) {
+                        console.log(u); //debug user
+                        console.log(p); //debug pass
+                        resultado = true;
+                    }
+                });
+
+                if (resultado === true) {
+                    mostrarAlert('exito', 'Autenticación correcta!'); // alert acceso exitoso
+                    localStorage.setItem('usuario', u);
+                    resolve("Exito");
+                    window.location.href = '../index.html';
+                } else {
+                    intentos--;
+                    if (intentos > 0) {
+                        mostrarAlert('fallo', `Usuario o contraseña incorrectos. Intentos restantes: ${intentos}`);
+                    } else {
+                        mostrarAlert('fallo', 'Has alcanzado el límite de intentos. Por favor, inténtalo más tarde.');
+                        reject("Fallo");
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                reject("Error");
+            });
     });
 }
+
 
 /* ------------------------------------------------------------------------------ */
 /* --------------------- LISTENER - CARGA DE DOCUMENTO -------------------------- */
@@ -104,15 +133,16 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const user = document.getElementById('username').value;
                 const pass = document.getElementById('password').value;
                 try {
-                    await validarLogin(user, pass);
+                    await validarLogin(user, pass); // envia datos de user y pass ingresados en form login a validar
                     window.location.href = './pages/home.html';
-
                 } catch (error) {
                     console.warn(error);
                 }
             }
         });
     }
+
+
 
     const usuarioLogin = localStorage.getItem('usuario'); // obtiene el usuario almacenado en localStorage
     if (usuarioLogin) { // comprueba si hay un usuario almacenado
@@ -180,7 +210,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
 
-    graficarTarjetas();
+    graficarTarjetas(); // grafica mediante chart.js la cantidad de tajetas por estado
 });
 
 
@@ -190,8 +220,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
 async function cerrarSesion() {
-    localStorage.setItem('usuario', "");
-    window.location.href = '../index.html';
+    localStorage.setItem('usuario', ""); // limpia usuario logueado
+    window.location.href = '../index.html'; // redirecciona a index
 }
 
 async function crearTarjeta(tarjeta) {
@@ -212,12 +242,16 @@ async function crearTarjeta(tarjeta) {
             card.appendChild(elementText);
 
         } else if (dato === 'Fecha de creacion') {
+            // Definimos un objeto llamado 'opciones' que contiene las opciones de formato para la fecha.
+            // 'day: '2-digit'' formatea el día con dos dígitos 
+            // 'month: '2-digit'' formatea el mes con dos dígitos 
+            // 'year: 'numeric'' formatea el año con cuatro dígitos 
             const opciones = { day: '2-digit', month: '2-digit', year: 'numeric' };
+            // Formateamos la fecha actual según el formato definido y el idioma 'es-ES' (español de España).
+            // Guardamos esta cadena en el array 'tarjeta' en la posición indicada por 'index'.
             tarjeta[index] = new Date().toLocaleDateString('es-ES', opciones);
 
-
-
-            const fechaInicio = document.createElement('p');
+            const fechaInicio = document.createElement('p'); // crea elemento p donde ira la fecha de creacion de la tarjeta
             fechaInicio.textContent = `FECHA CREACION: ${new Date().toLocaleDateString('es-ES', opciones)}`;
             card.appendChild(fechaInicio);
 
@@ -281,8 +315,6 @@ async function mostrarTarjetas() {
         const estados = ['pendiente', 'ejecutando', 'finalizado'];
         card.classList.add(`estado-${tarjeta[5].toLowerCase().replace(/\s/g, '-')}`);
 
-        // Dentro de la función mostrarTarjetas()
-
         estados.forEach(function (estado) {
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
@@ -320,49 +352,48 @@ async function mostrarTarjetas() {
         const btnEliminar = document.createElement('button');
         btnEliminar.textContent = 'Eliminar';
         btnEliminar.classList.add('boton-eliminar');
+        // Asignar listener de evento click
         btnEliminar.addEventListener('click', function () {
             eliminarTarjeta(index);
-            mostrarTarjetas();
+            mostrarTarjetas();                 // Volver a mostrar las tarjetas para reflejar el cambio
         });
         card.appendChild(btnEliminar);
 
         const btnModificar = document.createElement('button');
         btnModificar.textContent = 'Modificar';
         btnModificar.classList.add('boton-eliminar');
+        // Asignar listener de evento click
         btnModificar.addEventListener('click', function () {
-
             modificarTarjeta(tarjeta);
-
-            mostrarTarjetas();
-
+            mostrarTarjetas();                // Volver a mostrar las tarjetas para reflejar el cambio
         });
-        card.appendChild(btnModificar);
+        card.appendChild(btnModificar); // Agrega el botón 'btnModificar' como hijo del elemento 'card'.
 
-        contenedorTarjetas.appendChild(card);
+        contenedorTarjetas.appendChild(card); // Agrega la tarjeta 'card' al contenedor de tarjetas 'contenedorTarjetas'.
     });
 }
 
 async function eliminarTarjetas() { // Función para eliminar todas las tarjetas almacenadas
-    const result = await mostrarAlert('borrar', 'tarjetas');
-    if (result.isConfirmed) {
+    const result = await mostrarAlert('borrar', 'tarjetas'); // mostrar alerta para confirmar eliminacion de tarjetas
+    if (result.isConfirmed) { // elimina las tarjetas almacenadas
         localStorage.removeItem('tarjetas');
         localStorage.removeItem('cantidadTarjetas');
 
         const contenedorTarjetas = document.getElementById('container-mostrar-tarjeta');
         contenedorTarjetas.innerHTML = ''; // Limpiar el contenedor 
-        Swal.fire({
+        Swal.fire({ // mustra la confirmacion de eliminacion de tarjetas
             title: "Eliminadas!",
             text: "Las tarjetas se eliminaron con éxito.",
             icon: "success"
         });
-        mostrarTarjetas();
+        mostrarTarjetas(); // Volver a mostrar las tarjetas para reflejar el cambio
     }
 }
 
 async function eliminarTarjeta(index) { // Función para eliminar una tarjeta específica
-    const result = await mostrarAlert('borrar', 'tarjeta');
+    const result = await mostrarAlert('borrar', 'tarjeta'); // mostrar alerta para confirmar eliminacion de la tarjeta
     if (result.isConfirmed) {
-        Swal.fire({
+        Swal.fire({ // mustra la confirmacion de eliminacion de la tarjeta
             title: "Eliminada!",
             text: "La tarjeta se elimino con éxito.",
             icon: "success"
@@ -371,25 +402,28 @@ async function eliminarTarjeta(index) { // Función para eliminar una tarjeta es
         let tarjetasStorage = JSON.parse(tarjetasString);
         tarjetasStorage.splice(index, 1); // Elimina la tarjeta del array
         localStorage.setItem('tarjetas', JSON.stringify(tarjetasStorage)); // Actualiza el localStorage
-        mostrarTarjetas();
+        mostrarTarjetas(); // Volver a mostrar las tarjetas para reflejar el cambio
+
     }
 }
 
 async function modificarTarjeta(tarjeta) {
-    const tarjetasString = localStorage.getItem('tarjetas');
-    let tarjetasStorage = JSON.parse(tarjetasString);
+    const tarjetasString = localStorage.getItem('tarjetas'); // Obtenemos la cadena de texto almacenada en localStorage 'tarjetas'
+    let tarjetasStorage = JSON.parse(tarjetasString); //  convierte la cadena JSON en un array de JavaScript.
 
+    // Buscamos el índice de una tarjeta específica en el array 'tarjetasStorage'.
+    // Usamos el método 'findIndex' que devuelve el índice del primer elemento que cumpla con la función de prueba proporcionada.
     const index = tarjetasStorage.findIndex(t =>
-        t[0] === tarjeta[0] &&
-        t[1] === tarjeta[1] &&
-        t[2] === tarjeta[2] &&
-        t[3] === tarjeta[3] &&
-        t[4] === tarjeta[4] &&
-        t[5] === tarjeta[5] &&
-        t[6] === tarjeta[6]
+        t[0] === tarjeta[0] && // Comparamos el primer elemento de 't' con el primer elemento de 'tarjeta'
+        t[1] === tarjeta[1] && // Comparamos el segundo elemento de 't' con el segundo elemento de 'tarjeta'
+        t[2] === tarjeta[2] && // Comparamos el tercer elemento de 't' con el tercer elemento de 'tarjeta'
+        t[3] === tarjeta[3] && // Comparamos el cuarto elemento de 't' con el cuarto elemento de 'tarjeta'
+        t[4] === tarjeta[4] && // Comparamos el quinto elemento de 't' con el quinto elemento de 'tarjeta'
+        t[5] === tarjeta[5] && // Comparamos el sexto elemento de 't' con el sexto elemento de 'tarjeta'
+        t[6] === tarjeta[6]    // Comparamos el séptimo elemento de 't' con el séptimo elemento de 'tarjeta'
     );
 
-
+    // formulario para modificar tarjeta
     const formModificar = document.createElement('form');
     formModificar.classList.add('form-container');
     formModificar.innerHTML = `
@@ -408,7 +442,7 @@ async function modificarTarjeta(tarjeta) {
         <button type="submit" class="boton-mostrar">Guardar cambios</button>
     `;
 
-    const result = await mostrarAlert('modificar', 'tarjeta');
+    const result = await mostrarAlert('modificar', 'tarjeta'); // solicita confirmacion para modificar tarjeta
     if (result.isConfirmed) {
 
         formModificar.addEventListener('submit', async function (event) {
@@ -431,7 +465,7 @@ async function modificarTarjeta(tarjeta) {
                 // Actualizar el localStorage con la tarjeta modificada
                 localStorage.setItem('tarjetas', JSON.stringify(tarjetasStorage));
 
-                Swal.fire({
+                Swal.fire({ // confirmacion de tarjeta modificada
                     title: "Modificada!",
                     text: "La tarjeta se modificó con éxito.",
                     icon: "success"
@@ -439,18 +473,16 @@ async function modificarTarjeta(tarjeta) {
 
                 // Mostrar las tarjetas actualizadas
                 mostrarTarjetas();
-                contenedorFormulario.style.display = 'none';
+                contenedorFormulario.style.display = 'none'; // oculta el formulario
             }
             contenedorFormulario.style.display = 'none';
         });
 
         const contenedorFormulario = document.getElementById('formulario-modificar');
         if (contenedorFormulario) {
-
             contenedorFormulario.style.display = 'flex';
             contenedorFormulario.innerHTML = '';
             contenedorFormulario.appendChild(formModificar);
-
         } else {
             console.error('El contenedor del formulario no se encontró.');
         }
@@ -585,7 +617,7 @@ async function filtrarTarjetas() { // Función para filtrar y mostrar las tarjet
             btnEliminar.classList.add('boton-eliminar');
             btnEliminar.addEventListener('click', function () {
                 eliminarTarjeta(tarjeta);
-                mostrarTarjetas();
+                mostrarTarjetas(); // Volver a mostrar las tarjetas para reflejar el cambio
             });
             card.appendChild(btnEliminar); // Agrega el botón de eliminar a la tarjeta
 
@@ -595,7 +627,7 @@ async function filtrarTarjetas() { // Función para filtrar y mostrar las tarjet
             btnModificar.classList.add('boton-eliminar');
             btnModificar.addEventListener('click', function () {
                 modificarTarjeta(tarjeta);
-                mostrarTarjetas();
+                mostrarTarjetas(); // Volver a mostrar las tarjetas para reflejar el cambio
             });
             card.appendChild(btnModificar); // Agrega el botón de modificar a la tarjeta
 
@@ -604,7 +636,7 @@ async function filtrarTarjetas() { // Función para filtrar y mostrar las tarjet
     });
 }
 
-async function contarTarjetas() {
+async function contarTarjetas() { // cuenta las tarjetas que existen en cada estado
     const tarjetasString = localStorage.getItem('tarjetas');
     const tarjetas = JSON.parse(tarjetasString);
 
@@ -612,7 +644,7 @@ async function contarTarjetas() {
     let ejecucion = 0;
     let finalizado = 0;
 
-    tarjetas.forEach(tarjeta => {
+    tarjetas.forEach(tarjeta => { // itera las tarjetas almacenadas e incrementa 1 si coincide el estado
         switch (tarjeta[5]) {
             case 'pendiente':
                 pendientes++;
@@ -628,10 +660,10 @@ async function contarTarjetas() {
         }
     });
 
-    return { pendientes, ejecucion, finalizado };
+    return { pendientes, ejecucion, finalizado }; // retorna la cantidad de tarjetas por estado
 }
 
-async function graficarTarjetas() {
+async function graficarTarjetas() { // grafica con chart.js las tarjetas por estado
     const { pendientes, ejecucion, finalizado } = await contarTarjetas();
     const ctx = document.getElementById('myChart');
     if (ctx) {
